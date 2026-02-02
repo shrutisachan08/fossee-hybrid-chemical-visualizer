@@ -1,5 +1,0 @@
-equipment_id,type,flowrate,pressure,temperature
-1,Pump,10.1,99.5,33
-2,Pump,11.4,100.2,36
-3,Valve,7.8,97.9,29
-4,Compressor,16.2,112.0,42
