@@ -1,12 +1,15 @@
 import sys
-from api import TOKEN
-from api import fetch_dataset_history
+import requests
+import api  # ✅ import module, NOT TOKEN
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QPushButton, QLabel,
-    QFileDialog, QVBoxLayout, QHBoxLayout, QTextEdit, QLineEdit,QListWidget
+    QFileDialog, QVBoxLayout, QTextEdit,
+    QLineEdit, QListWidget, QMessageBox
 )
-from api import login, upload_csv
+
+from api import login, upload_csv, fetch_dataset_history
 from charts import PieChart
+
 
 class EquipmentApp(QWidget):
     def __init__(self):
@@ -17,6 +20,7 @@ class EquipmentApp(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout()
+
         self.username = QLineEdit()
         self.username.setPlaceholderText("Username")
 
@@ -34,6 +38,7 @@ class EquipmentApp(QWidget):
         upload_btn = QPushButton("Upload CSV")
         upload_btn.clicked.connect(self.upload_file)
         layout.addWidget(upload_btn)
+
         self.summary_box = QTextEdit()
         self.summary_box.setReadOnly(True)
         layout.addWidget(self.summary_box)
@@ -41,21 +46,27 @@ class EquipmentApp(QWidget):
         self.chart_container = QVBoxLayout()
         layout.addLayout(self.chart_container)
 
-        self.setLayout(layout)
         self.history_label = QLabel("Last 5 Datasets")
         self.history_list = QListWidget()
         layout.addWidget(self.history_label)
         layout.addWidget(self.history_list)
 
+        self.download_pdf_btn = QPushButton("Download PDF of Selected Dataset")
+        self.download_pdf_btn.clicked.connect(self.download_selected_pdf)
+        layout.addWidget(self.download_pdf_btn)
+
+        self.setLayout(layout)
+
+    # ---------- AUTH ----------
     def handle_login(self):
         try:
             login(self.username.text(), self.password.text())
             self.summary_box.setText("Login successful!")
             self.load_history()
-
         except Exception as e:
             self.summary_box.setText(f"Login failed:\n{e}")
 
+    # ---------- UPLOAD ----------
     def upload_file(self):
         file_path, _ = QFileDialog.getOpenFileName(
             self, "Select CSV File", "", "CSV Files (*.csv)"
@@ -69,10 +80,10 @@ class EquipmentApp(QWidget):
             self.display_summary(data)
             self.display_chart(data["type_distribution"])
             self.load_history()
-
         except Exception as e:
             self.summary_box.setText(f"Upload failed:\n{e}")
-            
+
+    # ---------- DISPLAY ----------
     def display_summary(self, data):
         text = (
             f"Total Equipment: {data['total_equipment']}\n"
@@ -88,7 +99,6 @@ class EquipmentApp(QWidget):
         self.summary_box.setText(text)
 
     def display_chart(self, distribution):
-       
         while self.chart_container.count():
             item = self.chart_container.takeAt(0)
             if item.widget():
@@ -96,23 +106,64 @@ class EquipmentApp(QWidget):
 
         chart = PieChart(distribution)
         self.chart_container.addWidget(chart)
-    
+
+    # ---------- HISTORY ----------
     def load_history(self):
         try:
             datasets = fetch_dataset_history()
-
             self.history_list.clear()
 
             for ds in datasets:
-                item_text = (
+                self.history_list.addItem(
                     f"ID: {ds['id']} | "
                     f"Uploaded: {ds['uploaded_at']} | "
                     f"Total Equipment: {ds['total_equipment']}"
                 )
-                self.history_list.addItem(item_text)
-
-        except Exception as e:
+        except Exception:
             self.history_list.addItem("Failed to load history")
+
+    # ---------- PDF ----------
+    def download_selected_pdf(self):
+        selected_item = self.history_list.currentItem()
+
+        if not selected_item:
+            QMessageBox.warning(self, "No Selection", "Please select a dataset first.")
+            return
+
+        dataset_id = selected_item.text().split("|")[0].replace("ID:", "").strip()
+        self.download_pdf(dataset_id)
+
+    def download_pdf(self, dataset_id):
+        if not api.TOKEN:
+            QMessageBox.warning(self, "Not logged in", "Please login first.")
+            return
+
+        url = f"http://localhost:8000/api/datasets/{dataset_id}/report/"
+        headers = {"Authorization": f"Bearer {api.TOKEN}"}
+
+        response = requests.get(url, headers=headers, stream=True)
+
+        if response.status_code == 200:
+            save_path, _ = QFileDialog.getSaveFileName(
+                self,
+                "Save PDF",
+                f"dataset_{dataset_id}_report.pdf",
+                "PDF Files (*.pdf)"
+            )
+
+            if save_path:
+                with open(save_path, "wb") as f:
+                    for chunk in response.iter_content(8192):
+                        f.write(chunk)
+
+                QMessageBox.information(self, "Success", "PDF downloaded successfully!")
+        else:
+            QMessageBox.warning(
+                self,
+                "Error",
+                f"Failed to download PDF\n"
+                f"Status: {response.status_code}\n{response.text}"
+            )
 
 
 if __name__ == "__main__":

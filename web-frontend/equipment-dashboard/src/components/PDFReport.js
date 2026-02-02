@@ -1,27 +1,41 @@
 import React from "react";
-import jsPDF from "jspdf";
-//import api from "../api/axios";
-function PDFReport({ data }) {
-  const generatePDF = () => {
-    const doc = new jsPDF();
-    doc.text(`Equipment Dataset Report`, 10, 10);
-    doc.text(`Total Equipment: ${data.total_equipment}`, 10, 20);
-    doc.text(`Avg Flowrate: ${data.avg_flowrate}`, 10, 30);
-    doc.text(`Avg Pressure: ${data.avg_pressure}`, 10, 40);
-    doc.text(`Avg Temperature: ${data.avg_temperature}`, 10, 50);
 
-    let y = 60;
-    doc.text("Type Distribution:", 10, y);
-    y += 10;
-    Object.entries(data.type_distribution).forEach(([type, count]) => {
-      doc.text(`${type}: ${count}`, 10, y);
-      y += 10;
-    });
+function PDFDownloadButton({ datasetId }) {
+  const downloadPDF = async () => {
+    const token = localStorage.getItem("access");
+    if (!token) {
+      alert("You must be logged in to download the PDF");
+      return;
+    }
 
-    doc.save("report.pdf");
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/datasets/${datasetId}/report/`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!response.ok) {
+        const text = await response.text();
+        console.error("Download failed:", response.status, text);
+        alert(`Failed to download PDF: ${response.status}`);
+        return;
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `dataset_${datasetId}_report.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("Error downloading PDF");
+    }
   };
 
-  return <button onClick={generatePDF}>Generate PDF</button>;
+  return <button onClick={downloadPDF}>Download PDF</button>;
 }
 
-export default PDFReport;
+export default PDFDownloadButton;
+                                                                                                                                              

@@ -3,6 +3,8 @@ import api from "../api/axios";
 import Summary from "../components/Summary";
 import Charts from "../components/Charts";
 import DatasetHistory from "../components/DatasetHistory";
+import PDFDownloadButton from "../components/PDFReport";
+import "../style/dashboard.css";
 
 function Dashboard({ onLogout }) {
   const [datasets, setDatasets] = useState([]);
@@ -38,43 +40,20 @@ function Dashboard({ onLogout }) {
     onLogout();
   };
 
-  if (!datasets.length) {
-    return (
-      <>
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <h2>Dashboard</h2>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
-
-        <button onClick={() => fileInputRef.current.click()}>
-          + Upload CSV
-        </button>
-
-        <input
-          type="file"
-          accept=".csv"
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={handleUpload}
-        />
-      </>
-    );
-  }
-
   return (
-    <>
-      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}>
+    <div className="dashboard">
+      {/* Top bar */}
+      <div className="top-bar">
         <h2>Dashboard</h2>
-        <div>
-          <button onClick={() => fileInputRef.current.click()}>
-            + New Upload
-          </button>
-          <button onClick={handleLogout} style={{ marginLeft: "8px" }}>
+        <div className="actions">
+          <button onClick={() => fileInputRef.current.click()}>+ New Upload</button>
+          <button onClick={handleLogout} className="logout">
             Logout
           </button>
         </div>
       </div>
 
+      {/* File input */}
       <input
         type="file"
         accept=".csv"
@@ -83,10 +62,36 @@ function Dashboard({ onLogout }) {
         onChange={handleUpload}
       />
 
-      <Summary data={datasets[0]} />
-      <Charts data={datasets[0]} />
-      <DatasetHistory datasets={datasets} />
-    </>
+      {/* If no datasets */}
+      {datasets.length === 0 && (
+        <div className="card">
+          <p>No datasets uploaded yet.</p>
+          <button onClick={() => fileInputRef.current.click()}>+ Upload CSV</button>
+        </div>
+      )}
+
+      {/* Latest Dataset */}
+      {datasets.length > 0 && (
+        <div className="card latest-dataset">
+          <h3>Latest Dataset</h3>
+          <p>
+            Uploaded on: <span>{datasets[0].uploaded_at}</span>
+          </p>
+          <PDFDownloadButton datasetId={datasets[0].id} />
+        </div>
+      )}
+
+      {/* Summary & Charts */}
+      {datasets.length > 0 && (
+        <>
+          <Summary data={datasets[0]} />
+          <Charts data={datasets[0]} />
+        </>
+      )}
+
+      {/* Dataset History */}
+      {datasets.length > 0 && <DatasetHistory datasets={datasets} />}
+    </div>
   );
 }
 
