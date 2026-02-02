@@ -88,4 +88,3 @@ frontend/                # React frontend
       ├─ dashboard.css
 ```
 
-This project is open source under the [MIT License](LICENSE).
