@@ -1,6 +1,6 @@
 import sys
 import requests
-import api  # ✅ import module, NOT TOKEN
+import api
 from PyQt5.QtWidgets import (
     QApplication, QWidget, QPushButton, QLabel,
     QFileDialog, QVBoxLayout, QTextEdit,
@@ -57,7 +57,6 @@ class EquipmentApp(QWidget):
 
         self.setLayout(layout)
 
-    # ---------- AUTH ----------
     def handle_login(self):
         try:
             login(self.username.text(), self.password.text())
@@ -66,7 +65,6 @@ class EquipmentApp(QWidget):
         except Exception as e:
             self.summary_box.setText(f"Login failed:\n{e}")
 
-    # ---------- UPLOAD ----------
     def upload_file(self):
         file_path, _ = QFileDialog.getOpenFileName(
             self, "Select CSV File", "", "CSV Files (*.csv)"
@@ -82,8 +80,7 @@ class EquipmentApp(QWidget):
             self.load_history()
         except Exception as e:
             self.summary_box.setText(f"Upload failed:\n{e}")
-
-    # ---------- DISPLAY ----------
+            
     def display_summary(self, data):
         text = (
             f"Total Equipment: {data['total_equipment']}\n"
@@ -107,7 +104,6 @@ class EquipmentApp(QWidget):
         chart = PieChart(distribution)
         self.chart_container.addWidget(chart)
 
-    # ---------- HISTORY ----------
     def load_history(self):
         try:
             datasets = fetch_dataset_history()
@@ -122,7 +118,6 @@ class EquipmentApp(QWidget):
         except Exception:
             self.history_list.addItem("Failed to load history")
 
-    # ---------- PDF ----------
     def download_selected_pdf(self):
         selected_item = self.history_list.currentItem()
 
