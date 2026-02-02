@@ -6,6 +6,9 @@ import Dashboard from "./Pages/Dashboard";
 
 function App() {
   const [loggedIn, setLoggedIn] = useState(false);
+  const handleLogout = () => {
+    setLoggedIn(false);
+  };
 
   useEffect(() => {
     const token = localStorage.getItem("access");
@@ -30,9 +33,15 @@ function App() {
           }
         />
 
-        <Route
+         <Route
           path="/dashboard"
-          element={loggedIn ? <Dashboard /> : <Navigate to="/login" />}
+          element={
+            loggedIn ? (
+              <Dashboard onLogout={handleLogout} />
+            ) : (
+              <Navigate to="/login" />
+            )
+          }
         />
       </Routes>
     </Router>

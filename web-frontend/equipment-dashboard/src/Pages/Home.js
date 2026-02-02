@@ -1,14 +1,26 @@
 import React from "react";
 import CSVUpload from "../components/CSVUpload";
-//import api from "../api/axios";
+import "../style/home.css";
+
 function Home() {
   return (
-    <div style={{ maxWidth: "600px", margin: "50px auto", textAlign: "center" }}>
-      <h1>Welcome to Equipment Dashboard</h1>
-      <p>Upload your CSV file to view equipment statistics, charts, and reports.</p>
-      
-      {/* CSV Upload Component */}
-      <CSVUpload />
+    <div className="home-container">
+      <div className="home-card">
+        <h1>Equipment Dashboard ⚙️</h1>
+
+        <p className="home-subtitle">
+          Upload your CSV file to analyze equipment statistics, visualize data,
+          and generate insightful reports.
+        </p>
+
+        <div className="upload-section">
+          <CSVUpload />
+        </div>
+
+        <p className="home-footer">
+          Supported format: <strong>.csv</strong>
+        </p>
+      </div>
     </div>
   );
 }

@@ -20,7 +20,7 @@ function CSVUpload() {
     formData.append("csv_file", file);
 
     try {
-      await api.post("upload/", formData); // 👈 relative path only
+      await api.post("upload/", formData); 
       alert("File uploaded successfully!");
       navigate("/dashboard");
     } catch (err) {
