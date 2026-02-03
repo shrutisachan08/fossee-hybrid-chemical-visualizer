@@ -1,90 +1,132 @@
-# CSV Dashboard Web App
+# Fossee-hybrid-chemical-visualizer
 
-A web-based dashboard for uploading CSV files containing chemical equipment data. Users can view summaries, generate charts, track dataset history, and download PDF reports. Built with **React** for the frontend and **Django** for the backend.
+This project is a **Web + Desktop Equipment Dashboard** that allows users to upload CSV files, analyze equipment data, visualize results using charts, and view dataset history.
+
+The system consists of three main parts:
+
+* **Backend Server** – Handles CSV processing and APIs
+* **Web Frontend** – Browser-based dashboard for visualization
+* **Desktop App** – PyQt-based desktop visualizer
+
+---
+
+# Project Structure
+
+```
+Equipment-Dashboard/
+│
+├─ backend/
+│   ├─ server/           # Backend server logic (API, CSV processing)
+│   ├─ visualizer/       # Backend-side visualization / analysis utilities
+│
+├─ web-frontend/
+│   ├─ src/
+│   │   ├─ components/   # Reusable React components
+│   │   ├─ pages/        # Page-level components (Dashboard, Login, etc.)
+│   │   ├─ styles/       # CSS files for styling
+│   │   ├─ api/          # Axios API configuration
+│   │   ├─ App.js        # Main React app
+│   │   ├─ index.js      # React entry point
+│
+├─ desktop-app/
+│   ├─ charts.py         # Chart rendering logic
+│   ├─ api.py            # API communication with backend
+│   ├─ main.py           # Desktop application entry point
+│
+└─ README.md
+```
+
+---
 
 # Features
 
-* **CSV Upload** – Upload CSV files easily.
-* **Latest Dataset Overview** – View the most recently uploaded dataset.
-* **Data Summary** – Quick summary of uploaded data.
-* **Charts & Visualizations** – Explore dataset trends visually.
-* **Dataset History** – Browse past uploads with timestamps.
-* **PDF Report Download** – Download a PDF version of the dataset summary.
-* **User Authentication** – Logout functionality included.
+* Upload CSV files containing equipment data
+* Automatic data analysis on upload
+* Summary statistics and charts
+* Dataset history tracking
+* Web-based dashboard (React)
+* Desktop-based visualization app (Python)
 
-# Demo Credentials
+---
 
-You can test the app using these credentials:
+# Demo Credentials (Web App)
+
+Use the following credentials to test the web dashboard:
 
 * **Username:** `demo`
 * **Password:** `demo123`
 
-# Tech Stack
+---
 
-* **Frontend:** React, JavaScript, HTML, CSS
-* **Backend:** Django REST Framework, Python
-* **API:** Axios for frontend-backend communication
-* **Styling:** Custom CSS with responsive design
+# Setup Instructions
 
-# Installation & Setup
-
-## Backend (Django)
+## Backend Setup
 
 ```bash
-# Clone the repository
-git clone https://github.com/yourusername/csv-dashboard.git
-cd csv-dashboard/backend
+cd backend
 
-# Create virtual environment and install dependencies
+# Create virtual environment
 python -m venv venv
 source venv/bin/activate   # Linux/Mac
 venv\Scripts\activate      # Windows
+
+# Install dependencies
 pip install -r requirements.txt
 
-# Run migrations
-python manage.py makemigrations
-python manage.py migrate
-
-# Start the backend server
+# Start backend server
 python manage.py runserver
 ```
 
-## Frontend (React)
+> Make sure the backend server is running before starting the web or desktop app.
+
+---
+
+## Web Frontend Setup
 
 ```bash
-cd ../web-frontend
+cd web-frontend
 npm install
 npm start
 ```
 
-## Desktop
-```bash
-cd ../desktop-app
-python manage.py
-``` 
+Open the browser at:
 
-Open your browser at [http://localhost:3000](http://localhost:3000)
+```
+http://localhost:3000
+```
+
+---
+
+## Desktop App Setup
+
+```bash
+cd desktop-app
+pip install -r requirements.txt
+python main.py
+```
+
+The desktop app connects to the backend API to fetch data and display charts.
+
+---
 
 # Usage
 
-1. Login using **demo / demo123**.
-2. Upload a CSV file using the **+ Upload CSV** button.
-3. View the latest dataset summary, charts, and history.
-4. Download a PDF report using the **Download** button.
-5. Logout using the **Logout** button.
+1. Start the backend server
+2. Login to the web dashboard using **demo / demo123**
+3. Upload a CSV file
+4. View summaries, charts, and dataset history
+5. Optionally launch the desktop app for visualization
 
-# Folder Structure
+---
 
-```
-backend/                 # Django backend
-  ├─ api/                # Django app for CSV APIs
-  ├─ manage.py
-frontend/                # React frontend
-  ├─ src/
-      ├─ components/     # Summary, Charts, DatasetHistory, PDFReport
-      ├─ Pages/          # Dashboard, Login, Home
-      ├─ api/            # Axios API setup
-      ├─ App.js
-      ├─ dashboard.css
-```
+# Notes
 
+* Frontend and backend are deployed independently and communicate via APIs
+* The desktop app uses the same backend APIs as the web frontend
+* Ensure CORS is enabled on the backend for frontend access
+
+---
+
+# License
+
+This project is intended for academic and learning purposes.
