@@ -127,6 +127,4 @@ The desktop app connects to the backend API to fetch data and display charts.
 
 ---
 
-# License
 
-This project is intended for academic and learning purposes.
