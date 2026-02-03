@@ -101,7 +101,6 @@ http://localhost:3000
 
 ```bash
 cd desktop-app
-pip install -r requirements.txt
 python main.py
 ```
 
@@ -126,5 +125,6 @@ The desktop app connects to the backend API to fetch data and display charts.
 * Ensure CORS is enabled on the backend for frontend access
 
 ---
+
 
 
